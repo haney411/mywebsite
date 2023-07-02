@@ -5,54 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css" />
-    
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin/index.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin/index.min.js"></script> -->
-    
+
+    <style>
+        #viewer-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #viewer-container {
+            width: 80%;
+            height: 80%;
+            margin: 5% auto;
+            background-color: white;
+        }
+    </style>
+
 </head>
 
-    
-    
-<script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/gyroscope-plugin/index.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/stereo-plugin/index.min.js"></script>
-    
-<!-- Link to Stereo Plugin -->
-    
-<!-- the viewer container must have a defined size -->
-<div id="viewer" style="width: 100vw; height: 100vh;"></div>
-
-    
-    
 <body>
 
-    
+    <!-- Thumbnail of the image -->
+    <!-- Thumbnail of the image -->
+    <img src="https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg" id="thumbnail" alt="Click to view in 360" style="cursor:pointer; width: 350px; height: auto;">
+
+
     <!-- Pop-up for the Photo Sphere Viewer -->
     <div id="viewer-popup">
-        <div id="viewer-container"></div>
+        <div id="viewer-container" style="width: 80vw; height: 80vh;"></div>
     </div>
-    <!-- the viewer container must have a defined size -->
-    <div id="viewer" style="width: 100vw; height: 100vh;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/gyroscope-plugin/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/stereo-plugin/index.min.js"></script>
 
     <script>
-        
-        
-        const viewer = new PhotoSphereViewer.Viewer({
-            container: 'viewer',
-            panorama: 'https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg',
-            caption: 'Parc national du Mercantour <b>&copy; Damien Sorel</b>',
-            loadingImg: 'https://photo-sphere-viewer-data.netlify.app/assets/loader.gif',
-            touchmoveTwoFingers: true,
-            mousewheelCtrlKey: true,   
-            plugins: [
-                PhotoSphereViewer.GyroscopePlugin,
-                PhotoSphereViewer.StereoPlugin,
-            ],
+        document.addEventListener("DOMContentLoaded", function() {
+            var viewer;
+            var thumbnail = document.getElementById('thumbnail');
+            var viewerPopup = document.getElementById('viewer-popup');
+
+            // Event when the thumbnail is clicked
+            thumbnail.addEventListener('click', function() {
+                viewerPopup.style.display = 'block';
+                if (!viewer) {
+                    viewer = new PhotoSphereViewer.Viewer({
+                        container: 'viewer-container',
+                        panorama: 'https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg',
+                        caption: 'Parc national du Mercantour <b>&copy; Damien Sorel</b>',
+                        loadingImg: 'https://photo-sphere-viewer-data.netlify.app/assets/loader.gif',
+                        touchmoveTwoFingers: true,
+                        mousewheelCtrlKey: true,
+                        plugins: [
+                            PhotoSphereViewer.GyroscopePlugin,
+                            PhotoSphereViewer.StereoPlugin,
+                        ]
+                    });
+                }
+            });
+
+            // Event to close the viewer when the background is clicked
+            viewerPopup.addEventListener('click', function(event) {
+                if (event.target === viewerPopup) {
+                    viewerPopup.style.display = 'none';
+                }
+            });
         });
-        
-        
     </script>
 
 </body>
