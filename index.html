@@ -1,36 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <!-- for optimal display on high DPI devices -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-Frame Panorama Viewer</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 </head>
 
-<script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.js"></script>
-
-<!-- the viewer container must have a defined size -->
-<div id="viewer" style="width: 100vw; height: 100vh;"></div>
-
-    
-    
 <body>
-
     
-    <!-- Pop-up for the Photo Sphere Viewer -->
-    <div id="viewer-popup">
-        <div id="viewer-container"></div>
+    <script src="https://static.kuula.io/embed.js" data-kuula="https://kuula.co/share/Nghh2?logo=1&info=1&fs=1&vr=0&zoom=1&sd=1&thumbs=1" data-width="70%" data-height="640px"></script>
+    
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg" alt="Click to view panorama" style="cursor: pointer; width: 100px;" onclick="openViewer('https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg')">
     </div>
-    <!-- the viewer container must have a defined size -->
-    <div id="viewer" style="width: 100vw; height: 100vh;"></div>
+
+    <div id="myModal" style="display: none; position: fixed; top: 10%; left: 10%; width: 80%; height: 80%; background-color: white; padding: 20px;">
+        <a-scene embedded id="panorama-scene">
+            <a-assets>
+                <img id="panorama-image" src="">
+            </a-assets>
+            <a-sky src="#panorama-image" radius="10"></a-sky>
+            <a-camera>
+                <a-cursor></a-cursor>
+            </a-camera>
+        </a-scene>
+        <button onclick="document.querySelector('a-scene').requestFullscreen()">Go Fullscreen</button>
+    </div>
 
     <script>
-        const viewer = new PhotoSphereViewer.Viewer({
-            container: document.querySelector('#viewer'),
-            panorama: 'https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg',
+        document.addEventListener("DOMContentLoaded", function() {
+            var scene = document.getElementById("panorama-scene");
+            window.openViewer = function(imageSrc) {
+                scene.addEventListener("loaded", function() {
+                    document.getElementById("panorama-image").setAttribute("src", imageSrc);
+                    document.getElementById("myModal").style.display = "block";
+                });
+            };
         });
     </script>
-
 </body>
+
 </html>
