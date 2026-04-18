@@ -498,14 +498,27 @@
 
       // Sync position
       next.currentTime = current.currentTime;
-      current.pause();
 
-      activeVersion = version;
-
-      if (wasPlaying) {
-        next.play();
+      if (!wasPlaying) {
+        activeVersion = version;
+        updateVersionUI();
+        updateSeekBar(next.currentTime, next.duration);
+        return;
       }
-      updateVersionUI();
+
+      next.muted = true;
+      next.play()
+        .then(() => {
+          current.pause();
+          next.muted = false;
+          activeVersion = version;
+          updateVersionUI();
+          updateSeekBar(next.currentTime, next.duration);
+        })
+        .catch((error) => {
+          next.muted = false;
+          console.error('Could not switch audio versions:', error);
+        });
     }
 
     // ── Prev / Next ───────────────────────────────────────────────────────────
