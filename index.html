@@ -1,83 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- for optimal display on high DPI devices -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paul Haney</title>
+  <meta name="description" content="Paul Haney: music, pictures, physics and miscellaneous things.">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css" />
+    body {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-    <style>
-        #viewer-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
+    /* ── Banner (matches music.html / pictures.html) ── */
+    .banner { background-color: #333; color: #fff; padding: 10px; }
+    .banner ul { list-style-type: none; margin: 0; padding: 0; display: flex; justify-content: space-between; flex-wrap: wrap; }
+    .banner li { margin-right: 20px; }
+    .banner li a { color: #fff; text-decoration: none; font-size: 28px; }
+    .banner li a:hover { color: #aaa; }
+    .banner li a.current { color: #a0a0ff; }
 
-        #viewer-container {
-            width: 80%;
-            height: 80%;
-            margin: 5% auto;
-            background-color: white;
-        }
-    </style>
+    /* ── Hero ── */
+    .hero {
+      padding: 90px 20px 70px;
+      text-align: center;
+      background:
+        radial-gradient(ellipse 60% 80% at 50% 0%, rgba(90, 90, 180, 0.22), transparent 70%),
+        #1a1a1a;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: #f4f4f4;
+    }
+    .hero p {
+      margin-top: 14px;
+      font-size: clamp(15px, 2.2vw, 19px);
+      color: #9a9ab0;
+      letter-spacing: 0.02em;
+    }
 
+    /* ── Sections ── */
+    .page { flex: 1; width: 100%; max-width: 1000px; margin: 44px auto 60px; padding: 0 20px; }
+    .page h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #888;
+      margin-bottom: 14px;
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+
+    .tile {
+      display: flex;
+      flex-direction: column;
+      background: #242424;
+      border: 1px solid #333;
+      border-radius: 12px;
+      overflow: hidden;
+      color: inherit;
+      text-decoration: none;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .tile:hover { border-color: #5a5aa0; transform: translateY(-2px); }
+
+    .tile-art { aspect-ratio: 16 / 9; background: #111; position: relative; overflow: hidden; }
+    .tile-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .tile-art.music {
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, #22223a, #1c1c26 60%, #2a2440);
+      color: #a0a0ff;
+    }
+
+    .tile-body { padding: 16px 18px 18px; }
+    .tile-title { font-size: 20px; font-weight: 600; color: #f0f0f0; }
+    .tile-text { font-size: 14px; color: #999; margin-top: 6px; line-height: 1.5; }
+    .tile-go { font-size: 13px; color: #a0a0ff; margin-top: 12px; }
+
+    footer {
+      text-align: center;
+      color: #555;
+      font-size: 12px;
+      padding: 24px 20px 30px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    @media (max-width: 600px) {
+      .banner li a { font-size: 20px; }
+      .hero { padding: 60px 20px 48px; }
+    }
+  </style>
 </head>
-
 <body>
 
-    <!-- Thumbnail of the image -->
-    <!-- Thumbnail of the image -->
-    <img src="https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg" id="thumbnail" alt="Click to view in 360" style="cursor:pointer; width: 350px; height: auto;">
+  <div class="banner">
+    <ul>
+      <li><a href="index.html" class="current">Home</a></li>
+      <li><a href="music.html">Music</a></li>
+      <li><a href="pictures.html">Pictures</a></li>
+      <li><a href="physics.html">Physics</a></li>
+      <li><a href="miscellaneous.html">Miscellaneous</a></li>
+    </ul>
+  </div>
 
+  <header class="hero">
+    <h1>Paul Haney</h1>
+    <p>Music, pictures, physics, and miscellaneous things.</p>
+  </header>
 
-    <!-- Pop-up for the Photo Sphere Viewer -->
-    <div id="viewer-popup">
-        <div id="viewer-container" style="width: 80vw; height: 80vh;"></div>
+  <main class="page">
+    <h2>Featured</h2>
+    <div class="grid">
+
+      <a class="tile" href="pictures.html">
+        <div class="tile-art"><img src="scenes/neermoor/thumb.jpg" alt="A garden pond rebuilt in 3D"></div>
+        <div class="tile-body">
+          <div class="tile-title">Pictures</div>
+          <div class="tile-text">Places I've photographed, rebuilt in 3D. Walk around inside them.</div>
+          <div class="tile-go">Explore →</div>
+        </div>
+      </a>
+
+      <a class="tile" href="music.html">
+        <div class="tile-art music" aria-hidden="true">
+          <svg width="160" height="64" viewBox="0 0 160 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+            <line x1="8" y1="26" x2="8" y2="38"/><line x1="22" y1="16" x2="22" y2="48"/>
+            <line x1="36" y1="22" x2="36" y2="42"/><line x1="50" y1="8" x2="50" y2="56"/>
+            <line x1="64" y1="18" x2="64" y2="46"/><line x1="78" y1="4" x2="78" y2="60"/>
+            <line x1="92" y1="14" x2="92" y2="50"/><line x1="106" y1="24" x2="106" y2="40"/>
+            <line x1="120" y1="10" x2="120" y2="54"/><line x1="134" y1="20" x2="134" y2="44"/>
+            <line x1="148" y1="27" x2="148" y2="37"/>
+          </svg>
+        </div>
+        <div class="tile-body">
+          <div class="tile-title">Music</div>
+          <div class="tile-text">Tracks to listen to, with versions to compare.</div>
+          <div class="tile-go">Listen →</div>
+        </div>
+      </a>
+
     </div>
+  </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/gyroscope-plugin/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/stereo-plugin/index.min.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var viewer;
-            var thumbnail = document.getElementById('thumbnail');
-            var viewerPopup = document.getElementById('viewer-popup');
-
-            // Event when the thumbnail is clicked
-            thumbnail.addEventListener('click', function() {
-                viewerPopup.style.display = 'block';
-                if (!viewer) {
-                    viewer = new PhotoSphereViewer.Viewer({
-                        container: 'viewer-container',
-                        panorama: 'https://raw.githubusercontent.com/haney411/mywebsite/master/360pic.jpg',
-                        caption: 'Parc national du Mercantour <b>&copy; Damien Sorel</b>',
-                        loadingImg: 'https://photo-sphere-viewer-data.netlify.app/assets/loader.gif',
-                        touchmoveTwoFingers: true,
-                        mousewheelCtrlKey: true,
-                        plugins: [
-                            PhotoSphereViewer.GyroscopePlugin,
-                            PhotoSphereViewer.StereoPlugin,
-                        ]
-                    });
-                }
-            });
-
-            // Event to close the viewer when the background is clicked
-            viewerPopup.addEventListener('click', function(event) {
-                if (event.target === viewerPopup) {
-                    viewerPopup.style.display = 'none';
-                }
-            });
-        });
-    </script>
+  <footer>© 2026 Paul Haney</footer>
 
 </body>
 </html>
