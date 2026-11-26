@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backyard from the Air, Florida</title>
+<style>
+  :root { --fg: #f2f0ea; --muted: #a9a59b; --panel: rgba(16,17,20,.72); --accent: #ff8a00; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #101114; color: var(--fg);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #stage, #stage canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+  #top { position: fixed; top: 16px; left: 16px; display: flex; align-items: center; gap: 14px; }
+  #title { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .02em;
+    text-shadow: 0 1px 3px #000a; pointer-events: none; }
+  #back { color: var(--fg); text-decoration: none; font-size: 13px; background: var(--panel);
+    padding: 4px 10px; border-radius: 6px; }
+  #back:hover { color: #a0a0ff; }
+  #help { position: fixed; left: 16px; bottom: 16px; background: var(--panel); backdrop-filter: blur(6px);
+    padding: 10px 14px; border-radius: 8px; max-width: calc(100vw - 64px); }
+  #help table { border-collapse: collapse; }
+  #help td { padding: 1px 10px 1px 0; vertical-align: top; }
+  #help td:first-child { color: var(--muted); white-space: nowrap; }
+  kbd { font: 12px ui-monospace, Consolas, monospace; border: 1px solid #fff4; border-bottom-width: 2px;
+    border-radius: 4px; padding: 0 4px; }
+  #hud { position: fixed; right: 16px; top: 16px; background: var(--panel); padding: 8px 12px; border-radius: 8px;
+    font: 12px/1.5 ui-monospace, Consolas, monospace; white-space: pre; }
+  .hidden { display: none !important; }
+  #loader { position: fixed; inset: 0; display: grid; place-items: center; background: #101114;
+    transition: opacity .6s; z-index: 10; }
+  #loader.done { opacity: 0; pointer-events: none; }
+  #loader .box { width: min(320px, 80vw); text-align: center; }
+  #track { height: 3px; background: #fff2; border-radius: 2px; overflow: hidden; margin-top: 10px; }
+  #bar { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  #loadmsg { color: var(--muted); font-size: 13px; }
+  @media (max-width: 600px) { #help { font-size: 12px; } }
+  #stage canvas { touch-action: none; }
+  html, body { overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  #help .touchhelp, #joy, #helpbtn { display: none; }
+  body.touch #help .keys { display: none; }
+  body.touch #help .touchhelp { display: table; }
+  body.touch #help { left: 16px; right: 16px; bottom: auto; top: 56px; max-width: none; transition: opacity .5s; }
+  body.touch #help.faded { opacity: 0; pointer-events: none; }
+  body.touch #helpbtn { display: grid; place-items: center; position: fixed; top: 12px; right: 12px; width: 34px; height: 34px;
+    border-radius: 50%; border: 1.5px solid #fff8; background: var(--panel); color: var(--fg); font: 600 16px system-ui, sans-serif; }
+  body.touch #joy { display: block; position: fixed; left: 22px; bottom: calc(26px + env(safe-area-inset-bottom));
+    width: 124px; height: 124px; border-radius: 50%; touch-action: none;
+    background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.28); backdrop-filter: blur(4px); }
+  #knob { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%;
+    background: rgba(255,255,255,.38); box-shadow: 0 2px 8px #0006; pointer-events: none; }
+  body.touch #top { right: 60px; }
+  body.touch #title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="top"><a id="back" href="../../pictures.html">← Pictures</a><h1 id="title">Backyard from the Air, Florida</h1></div>
+<div id="help">
+  <table class="touchhelp">
+    <tr><td>stick</td><td>walk (push up to go forward)</td></tr>
+    <tr><td>drag</td><td>look around</td></tr>
+    <tr><td>two fingers</td><td>slide left / right / up / down</td></tr>
+    <tr><td>pinch</td><td>move in / out</td></tr>
+  </table>
+  <table class="keys">
+    <tr><td><kbd>W</kbd><kbd>S</kbd> / <kbd>↑</kbd><kbd>↓</kbd></td><td>walk forward / back</td></tr>
+    <tr><td><kbd>←</kbd><kbd>→</kbd></td><td>step left / right</td></tr>
+    <tr><td><kbd>Q</kbd><kbd>E</kbd></td><td>lower / raise</td></tr>
+    <tr><td><kbd>Shift</kbd></td><td>move faster</td></tr>
+    <tr><td>left drag</td><td>turn and look around</td></tr>
+    <tr><td>right drag</td><td>slide left / right / up / down</td></tr>
+  </table>
+</div>
+<div id="joy" aria-label="Walk"><div id="knob"></div></div>
+<button id="helpbtn" aria-label="Show controls">?</button>
+<div id="hud" class="hidden"></div>
+<div id="loader"><div class="box"><div id="loadmsg">Loading…</div><div id="track"><div id="bar"></div></div></div></div>
+<script id="scene-config" type="application/json">{"title":"Backyard from the Air, Florida","up":[0,0,1],"medianStep":7.70518,"cameras":[{"name":"DJI_0020.JPG","pos":[42.41688,-17.78794,0.07912],"fwd":[-0.03134,0.10162,-0.99433]},{"name":"DJI_0021.JPG","pos":[38.81459,-11.09511,0.24014],"fwd":[-0.02309,0.0834,-0.99625]},{"name":"DJI_0022.JPG","pos":[38.53833,-3.40526,-0.43492],"fwd":[-0.02792,0.08052,-0.99636]},{"name":"DJI_0023.JPG","pos":[38.75433,4.30956,-0.07379],"fwd":[-0.04059,0.07651,-0.99624]},{"name":"DJI_0024.JPG","pos":[38.98324,11.83071,0.01655],"fwd":[-0.04998,0.08707,-0.99495]},{"name":"DJI_0025.JPG","pos":[38.81719,19.50067,0.16996],"fwd":[-0.04942,0.09632,-0.99412]},{"name":"DJI_0026.JPG","pos":[38.83497,21.58099,0.078],"fwd":[-0.04899,0.09886,-0.99389]},{"name":"DJI_0027.JPG","pos":[22.41636,23.2238,0.82536],"fwd":[-0.03352,-0.13931,-0.98968]},{"name":"DJI_0028.JPG","pos":[26.90499,15.73871,0.44576],"fwd":[-0.03668,-0.13203,-0.99057]},{"name":"DJI_0029.JPG","pos":[26.50795,8.24271,-0.55405],"fwd":[-0.00557,-0.12496,-0.99215]},{"name":"DJI_0030.JPG","pos":[26.47489,0.70789,-1.03721],"fwd":[0.00907,-0.11939,-0.99281]},{"name":"DJI_0031.JPG","pos":[26.58097,-7.03335,-0.9115],"fwd":[0.00532,-0.10992,-0.99393]},{"name":"DJI_0032.JPG","pos":[26.87182,-14.73809,-0.95992],"fwd":[-0.00607,-0.10004,-0.99497]},{"name":"DJI_0033.JPG","pos":[27.08204,-22.46508,-1.25141],"fwd":[-0.01535,-0.08775,-0.99602]},{"name":"DJI_0034.JPG","pos":[27.16772,-26.11349,-0.97],"fwd":[-0.01978,-0.08451,-0.99623]},{"name":"DJI_0035.JPG","pos":[13.41611,-23.162,1.3412],"fwd":[-0.01729,0.10695,-0.99411]},{"name":"DJI_0036.JPG","pos":[16.20889,-16.59281,1.30506],"fwd":[-0.00396,0.10362,-0.99461]},{"name":"DJI_0037.JPG","pos":[16.8066,-9.0618,-0.08551],"fwd":[-0.00618,0.11067,-0.99384]},{"name":"DJI_0038.JPG","pos":[16.8066,-1.4312,0.02196],"fwd":[-0.00755,0.1179,-0.993]},{"name":"DJI_0039.JPG","pos":[16.7175,6.45768,-0.08877],"fwd":[-0.00603,0.11885,-0.99289]},{"name":"DJI_0040.JPG","pos":[16.54345,14.05356,0.41825],"fwd":[-0.00141,0.11211,-0.99369]},{"name":"DJI_0041.JPG","pos":[16.45889,21.83349,0.11228],"fwd":[0.00364,0.10728,-0.99422]},{"name":"DJI_0042.JPG","pos":[2.27943,22.79057,0.74076],"fwd":[-0.02464,-0.10847,-0.99379]},{"name":"DJI_0043.JPG","pos":[5.0086,14.54996,0.9071],"fwd":[-0.00376,-0.10242,-0.99473]},{"name":"DJI_0044.JPG","pos":[5.76491,7.16856,0.58168],"fwd":[-0.00302,-0.10281,-0.9947]},{"name":"DJI_0045.JPG","pos":[5.76074,-0.40359,-0.15455],"fwd":[0.00103,-0.10974,-0.99396]},{"name":"DJI_0046.JPG","pos":[5.63992,-8.13611,-0.49225],"fwd":[0.00496,-0.1117,-0.99373]},{"name":"DJI_0047.JPG","pos":[5.60971,-15.83168,-0.27815],"fwd":[0.00709,-0.10867,-0.99405]},{"name":"DJI_0048.JPG","pos":[5.64072,-23.31117,-0.44097],"fwd":[0.00777,-0.10522,-0.99442]},{"name":"DJI_0049.JPG","pos":[-7.75166,-22.6383,0.38932],"fwd":[-0.0235,0.09538,-0.99516]},{"name":"DJI_0050.JPG","pos":[-4.74109,-16.19555,0.69897],"fwd":[-0.01074,0.10176,-0.99475]},{"name":"DJI_0051.JPG","pos":[-4.76403,-8.50373,0.44375],"fwd":[0.00331,0.11556,-0.99329]},{"name":"DJI_0052.JPG","pos":[-4.77359,-0.6689,0.04604],"fwd":[0.01112,0.12153,-0.99252]},{"name":"DJI_0053.JPG","pos":[-4.9153,7.07768,0.3315],"fwd":[0.01474,0.11887,-0.9928]},{"name":"DJI_0054.JPG","pos":[-4.94798,14.68644,0.38097],"fwd":[0.01617,0.11065,-0.99373]},{"name":"DJI_0055.JPG","pos":[-4.85035,22.42841,-0.2699],"fwd":[0.01514,0.10232,-0.99464]},{"name":"DJI_0056.JPG","pos":[-4.70668,25.84467,-0.3061],"fwd":[0.01627,0.09937,-0.99492]},{"name":"DJI_0057.JPG","pos":[-19.46563,23.49206,0.89203],"fwd":[-0.00677,-0.10926,-0.99399]},{"name":"DJI_0058.JPG","pos":[-16.46499,16.33153,1.1223],"fwd":[0.01311,-0.1049,-0.9944]},{"name":"DJI_0059.JPG","pos":[-15.35328,8.95357,0.05683],"fwd":[0.01215,-0.10318,-0.99459]},{"name":"DJI_0060.JPG","pos":[-15.18277,1.23156,-0.71724],"fwd":[0.01457,-0.10995,-0.99383]},{"name":"DJI_0061.JPG","pos":[-15.03726,-6.7675,-0.4637],"fwd":[0.01832,-0.11281,-0.99345]},{"name":"DJI_0062.JPG","pos":[-15.00583,-14.48471,0.17144],"fwd":[0.01962,-0.10983,-0.99376]},{"name":"DJI_0063.JPG","pos":[-15.0142,-22.17691,-0.03695],"fwd":[0.02104,-0.10447,-0.99431]},{"name":"DJI_0064.JPG","pos":[-14.96278,-25.44911,-0.08517],"fwd":[0.01984,-0.10297,-0.99449]},{"name":"DJI_0065.JPG","pos":[-28.46263,-22.38771,0.24077],"fwd":[-0.0032,0.08769,-0.99614]},{"name":"DJI_0066.JPG","pos":[-25.78002,-15.9369,1.11626],"fwd":[0.00839,0.09304,-0.99563]},{"name":"DJI_0067.JPG","pos":[-25.69562,-8.43857,0.5409],"fwd":[0.01374,0.10656,-0.99421]},{"name":"DJI_0068.JPG","pos":[-25.76382,-0.75179,-0.04056],"fwd":[0.01893,0.12043,-0.99254]},{"name":"DJI_0069.JPG","pos":[-25.94031,6.93135,0.12363],"fwd":[0.02154,0.12378,-0.99208]},{"name":"DJI_0070.JPG","pos":[-25.92798,14.6318,0.02617],"fwd":[0.02103,0.12175,-0.99234]},{"name":"DJI_0071.JPG","pos":[-25.96704,22.49944,-0.00572],"fwd":[0.01979,0.11526,-0.99314]},{"name":"DJI_0072.JPG","pos":[-25.74287,25.97254,-0.0581],"fwd":[0.02118,0.11171,-0.99351]},{"name":"DJI_0073.JPG","pos":[-39.12439,19.94444,0.36736],"fwd":[0.01247,-0.10672,-0.99421]},{"name":"DJI_0074.JPG","pos":[-36.90651,12.86774,0.00233],"fwd":[0.01857,-0.10637,-0.99415]},{"name":"DJI_0075.JPG","pos":[-36.39243,5.32219,-0.23985],"fwd":[0.02363,-0.11162,-0.99347]},{"name":"DJI_0076.JPG","pos":[-36.48008,-2.37362,-0.60967],"fwd":[0.02905,-0.11446,-0.993]},{"name":"DJI_0077.JPG","pos":[-36.50132,-10.06855,-1.33111],"fwd":[0.03264,-0.11208,-0.99316]},{"name":"DJI_0078.JPG","pos":[-36.75074,-17.90027,-0.81385],"fwd":[0.03634,-0.10835,-0.99345]},{"name":"DJI_0079.JPG","pos":[-36.54871,-25.85511,-0.9494],"fwd":[0.03667,-0.10526,-0.99377]}],"limits":{"backShift":0,"pitchMaxDeg":89},"startCamera":30,"startView":{"pos":[16.5,-10,6],"yaw":90,"pitch":-62},"splatUrl":"scene.spz"}</script>
+
+<script type="module" src="../viewer.js"></script>
+</body>
+</html>
